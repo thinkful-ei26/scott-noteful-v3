@@ -67,7 +67,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
 // mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
 //   .then(() => {
 //     const updateNote = {"title": "Wubba Lubba Dub Dub x3", "content": "It means I updated"};
-//     return Note.findOneAndUpdate("5bfdadc5d6e28500ce353c4f", updateNote, {new: true});
+//     return Note.findByIdAndUpdate("5bfdadc5d6e28500ce353c4f", updateNote, {new: true});
 //   })
 //   .then(results => {
 //     console.log(results);

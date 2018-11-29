@@ -18,5 +18,5 @@ noteSchema.set("toJSON", { //toObject seems to fix __v in terminal
   }
 });
 
-
+const note = mongoose.model("Note", noteSchema);
 module.exports = mongoose.model("Note", noteSchema);

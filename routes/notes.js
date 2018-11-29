@@ -1,4 +1,5 @@
 "use strict";
+const mongoose = require('mongoose');
 
 const express = require("express");
 const Note = require("../models/note");
@@ -6,13 +7,18 @@ const router = express.Router();
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get("/", (req, res, next) => {
-  const {searchTerm} = req.query;
+  const {searchTerm, folderId} = req.query;
   let filter = {};
   const regex = new RegExp(searchTerm, 'i');
 
   if (searchTerm) {
     filter.title = regex;
   }
+
+  if (folderId) {
+    filter.folderId = folderId;
+  }
+
   Note.find(filter).sort({ updatedAt: 'desc' })
     .then(results => res.json(results))
     .catch(err => next(err));
@@ -47,12 +53,21 @@ router.get("/:id", (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post("/", (req, res, next) => {
-  if (!req.body.title) {
+  const { title, content, folderId } = req.body;
+  const newNote = {title, content, folderId};
+
+  if (!mongoose.Types.ObjectId.isValid(folderId)) {
+    let error = new Error('not found');
+    error.status = 404;
+    return next(error);
+  }
+
+  if (!title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
   }
-  const newNote = req.body;
+
   Note.create(newNote)
     .then(results => {
       res.location(`${req.originalUrl}/${results.id}`).status(201).json(results);
@@ -68,8 +83,15 @@ router.post("/", (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put("/:id", (req, res, next) => {
   const {id} = req.params;
-  const {title, content} = req.body;
-  const updateObj = {title, content};
+  const {title, content, folderId} = req.body;
+  const updateObj = {title, content, folderId};
+
+  if (!mongoose.Types.ObjectId.isValid(folderId)) {
+    let error = new Error('not found');
+    error.status = 404;
+    return next(error);
+  }
+
   Note.findByIdAndUpdate(id, updateObj, { new: true })
     .then(result => {
       if (result) {

@@ -9,7 +9,7 @@ const { TEST_MONGODB_URI } = require('../config');
 
 const Note = require('../models/note');
 
-const { notes } = require('../db/seed/notes');
+const { notes } = require('../db/seed/data');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -65,7 +65,7 @@ describe('notes tests', function() {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt');
+          expect(res.body).to.have.keys('id', 'title', 'content', 'folderId', 'createdAt', 'updatedAt');
 
           // 3) then compare database results to API response
           expect(res.body.id).to.equal(data.id);
@@ -82,6 +82,7 @@ describe('notes tests', function() {
       const newItem = {
         'title': 'The best article about cats ever!',
         'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
+
       };
 
       let res;
